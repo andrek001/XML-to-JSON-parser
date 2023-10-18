@@ -42,51 +42,29 @@ public class Main {
         return list;
     }
 
-    private static void read(Node node, List<Employee> list) {
-        NodeList nodeList = node.getChildNodes();
-        Employee newEmployee = new Employee();
-        boolean toNewObject = false;
+    private static void read(Node root, List<Employee> list) {
+
+        NodeList nodeList = root.getChildNodes();
+
         for (int i = 0; i < nodeList.getLength(); i++) {
-            if (toNewObject) {
-                Employee newEmployee1 = new Employee();
-                newEmployee = newEmployee1;
-            }
-            Node node_ = nodeList.item(i);
-            if (Node.ELEMENT_NODE == node_.getNodeType()) {
-                Element element = (Element) node_;
-                String nodeName = node_.getNodeName();
-                switch (nodeName) {
-                    case "id":
-                        newEmployee.setId(Long.parseLong(readNextText(node_)));
-                        break;
-                    case "firstName":
-                        newEmployee.setFirstName(readNextText(node_));
-                        break;
-                    case "lastName":
-                        newEmployee.setLastName(readNextText(node_));
-                        break;
-                    case "country":
-                        newEmployee.setCountry(readNextText(node_));
-                        break;
-                    case "age":
-                        newEmployee.setAge(Integer.parseInt(readNextText(node_)));
-                        list.add(newEmployee);
-                        toNewObject = true;
-                        break;
-                }
-                read(node_, list);
+            Node node = nodeList.item(i);
+
+            if (Node.ELEMENT_NODE == node.getNodeType()) {
+                Element employee = (Element) node;
+
+                long id = Integer.parseInt(employee.getElementsByTagName("id").item(0).getTextContent());
+                String firstName = employee.getElementsByTagName("firstName").item(0).getTextContent();
+                String lastName = employee.getElementsByTagName("lastName").item(0).getTextContent();
+                String country = employee.getElementsByTagName("country").item(0).getTextContent();
+                int age = Integer.parseInt(employee.getElementsByTagName("age").item(0).getTextContent());
+
+
+                Employee employee1 = new Employee(id, firstName, lastName, country, age);
+                list.add(employee1);
             }
         }
     }
 
-    private static String readNextText(Node node) {
-        NodeList nodeList = node.getChildNodes();
-        Node node_ = nodeList.item(0);
-        if (node_.getNodeType() == 3) {
-            return node_.toString().substring(8, node_.toString().length() - 1);
-        }
-        return "";
-    }
 
     public static String listToJson(List<Employee> list) {
         GsonBuilder builder = new GsonBuilder();
